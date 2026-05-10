@@ -1,0 +1,21 @@
+backend:
+  name: github
+  repo: staceyshih/art-portfolio
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "artworks"
+    label: "Artworks"
+    folder: "_artworks"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Year", name: "year", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["oil", "illustration", "sketch"] }
+      - { label: "Medium", name: "medium", widget: "string", hint: "e.g. Oil on canvas · 80 × 60 cm" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Cover Image", name: "image", widget: "image" }
