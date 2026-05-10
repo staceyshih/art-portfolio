@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stacey Shih — Art Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --text-primary: #1E1E1E;
+  --text-secondary: #6B7280;
+  --text-label: #9CA3AF;
+  --radius-pill: 999px;
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --shadow-nav: 0 2px 20px rgba(0,0,0,0.08);
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.07);
+}
+body { font-family: var(--font); background: #F5FAF8; color: var(--text-primary); min-height: 100vh; position: relative; }
+.bg-mesh { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse 60% 50% at 0% 0%, #C8F0E4 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 100% 5%, #E8F5DC 0%, transparent 55%), radial-gradient(ellipse 40% 40% at 50% 100%, #D4EEFF 0%, transparent 60%), #F5FAF8; }
+.page-wrap { position: relative; z-index: 1; }
+
+/* NAV */
+nav { position: sticky; top: 16px; z-index: 100; padding: 0 24px; margin-bottom: 16px; }
+.nav-inner { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-radius: var(--radius-pill); box-shadow: var(--shadow-nav); padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; max-width: 900px; margin: 0 auto; }
+.nav-logo { font-size: 15px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+.nav-filters { display: flex; gap: 4px; }
+.filter-item { font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text-primary); cursor: pointer; padding: 6px 14px; transition: color 0.2s; user-select: none; }
+.filter-item:hover, .filter-item.active { color: var(--text-label); }
+
+/* HERO */
+.hero { max-width: 900px; margin: 40px auto 48px; padding: 0 24px; }
+.hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 12px; }
+.hero p { font-size: 16px; color: var(--text-secondary); line-height: 1.6; }
+.section-label { max-width: 900px; margin: 0 auto 20px; padding: 0 24px; font-size: 13px; font-weight: 600; color: var(--text-label); letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* GALLERY */
+.gallery { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; columns: 3; column-gap: 16px; }
+@media (max-width: 700px) { .gallery { columns: 1; } .nav-filters { display: none; } }
+@media (max-width: 900px) and (min-width: 701px) { .gallery { columns: 2; } }
+
+/* CARD */
+.art-card { break-inside: avoid; margin-bottom: 16px; border-radius: var(--radius-card); overflow: hidden; cursor: pointer; box-shadow: var(--shadow-card); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.art-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.13); }
+.art-card-img { position: relative; overflow: hidden; background: #E5E7EB; }
+.art-card-img img { width: 100%; display: block; transition: transform 0.5s ease; object-fit: cover; }
+.art-card:hover .art-card-img img { transform: scale(1.04); }
+.art-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 50%, transparent 100%); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px 16px; }
+.art-card:hover .art-card-overlay { opacity: 1; }
+.overlay-cat { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 8px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; align-self: flex-start; }
+.cat-oil { background: rgba(220,252,231,0.85); color: #15803D; }
+.cat-illustration { background: rgba(238,242,255,0.85); color: #4338CA; }
+.cat-sketch { background: rgba(254,249,195,0.85); color: #A16207; }
+.overlay-title { font-size: 15px; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 4px; }
+.overlay-meta { font-size: 11px; color: rgba(255,255,255,0.65); }
+
+/* LIGHTBOX */
+.lightbox { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.lightbox.open { opacity: 1; pointer-events: all; }
+.lb-backdrop { position: absolute; inset: 0; background: rgba(10,14,20,0.7); backdrop-filter: blur(8px); }
+.lb-modal { position: relative; z-index: 1; background: white; border-radius: 24px; overflow: hidden; display: flex; max-width: 860px; width: 92%; max-height: 88vh; box-shadow: 0 30px 80px rgba(0,0,0,0.25); }
+.lb-image-side { flex: 1; min-width: 0; background: #F3F4F6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.lb-image-side img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lb-info-side { width: 260px; min-width: 240px; padding: 28px 24px; display: flex; flex-direction: column; overflow-y: auto; }
+.lb-cat { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-label); margin-bottom: 8px; }
+.lb-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; color: var(--text-primary); margin-bottom: 4px; }
+.lb-year { font-size: 13px; font-weight: 600; color: #6EE7B7; margin-bottom: 20px; }
+.lb-divider { height: 1px; background: #F3F4F6; margin-bottom: 16px; }
+.lb-desc { font-size: 13px; line-height: 1.75; color: var(--text-secondary); flex: 1; }
+.lb-medium { margin-top: 20px; padding-top: 16px; border-top: 1px solid #F3F4F6; font-size: 11px; font-weight: 600; color: var(--text-label); text-transform: uppercase; letter-spacing: 0.06em; }
+.lb-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 999px; background: rgba(0,0,0,0.08); border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); z-index: 2; transition: background 0.2s; }
+.lb-close:hover { background: rgba(0,0,0,0.15); }
+.lb-nav-row { display: flex; gap: 8px; margin-top: 16px; }
+.lb-nav-btn { flex: 1; background: #F3F4F6; border: none; border-radius: var(--radius-btn); padding: 8px; font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: background 0.2s; }
+.lb-nav-btn:hover { background: #E5E7EB; }
+.empty-state { text-align: center; padding: 80px 24px; color: var(--text-label); font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="page-wrap">
+  <nav>
+    <div class="nav-inner">
+      <span class="nav-logo">Stacey Shih</span>
+      <div class="nav-filters">
+        <span class="filter-item active" data-filter="all">All</span>
+        <span class="filter-item" data-filter="oil">Oil Painting</span>
+        <span class="filter-item" data-filter="illustration">Illustration</span>
+        <span class="filter-item" data-filter="sketch">Sketch</span>
+      </div>
+    </div>
+  </nav>
+  <div class="hero">
+    <h1>Oil Paintings &amp;<br>Illustrations.</h1>
+    <p>A collection of original artworks across different mediums and styles.</p>
+  </div>
+  <div class="section-label">Selected Works</div>
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-backdrop" id="lb-backdrop"></div>
+  <div class="lb-modal">
+    <button class="lb-close" id="lb-close">✕</button>
+    <div class="lb-image-side"><img id="lb-img" src="" alt=""></div>
+    <div class="lb-info-side">
+      <div class="lb-cat" id="lb-cat"></div>
+      <div class="lb-title" id="lb-title"></div>
+      <div class="lb-year" id="lb-year"></div>
+      <div class="lb-divider"></div>
+      <div class="lb-desc" id="lb-desc"></div>
+      <div class="lb-medium" id="lb-medium"></div>
+      <div class="lb-nav-row">
+        <button class="lb-nav-btn" id="lb-prev">← Prev</button>
+        <button class="lb-nav-btn" id="lb-next">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const catLabel = { oil: 'Oil Painting', illustration: 'Illustration', sketch: 'Sketch' };
+const catPillClass = { oil: 'cat-oil', illustration: 'cat-illustration', sketch: 'cat-sketch' };
+let allArtworks = [], visible = [], currentFilter = 'all', currentIndex = 0;
+
+async function loadArtworks() {
+  try { const res = await fetch('artworks.json'); allArtworks = await res.json(); }
+  catch(e) { allArtworks = []; }
+  buildGallery();
+}
+
+function buildGallery() {
+  const gallery = document.getElementById('gallery');
+  visible = currentFilter === 'all' ? allArtworks : allArtworks.filter(a => a.category === currentFilter);
+  if (visible.length === 0) { gallery.innerHTML = '<div class="empty-state">No artworks yet.</div>'; return; }
+  gallery.innerHTML = '';
+  visible.forEach((art, i) => {
+    const card = document.createElement('div');
+    card.className = 'art-card';
+    const cat = art.category || 'oil';
+    card.innerHTML = `<div class="art-card-img"><img src="${art.image||''}" alt="${art.title}" loading="lazy"><div class="art-card-overlay"><span class="overlay-cat ${catPillClass[cat]||''}">${catLabel[cat]||cat}</span><div class="overlay-title">${art.title}</div><div class="overlay-meta">${art.year} · ${(art.medium||'').split('·')[0].trim()}</div></div></div>`;
+    card.addEventListener('click', () => openLB(i));
+    gallery.appendChild(card);
+  });
+}
+
+function openLB(i) {
+  currentIndex = i; const art = visible[i]; const cat = art.category || 'oil';
+  document.getElementById('lb-img').src = art.image || '';
+  document.getElementById('lb-title').textContent = art.title;
+  document.getElementById('lb-year').textContent = art.year;
+  document.getElementById('lb-cat').textContent = catLabel[cat] || cat;
+  document.getElementById('lb-desc').textContent = art.description || '';
+  document.getElementById('lb-medium').textContent = art.medium || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+
+document.getElementById('lb-close').addEventListener('click', closeLB);
+document.getElementById('lb-backdrop').addEventListener('click', closeLB);
+document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex-1+visible.length)%visible.length; openLB(currentIndex); });
+document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); currentIndex = (currentIndex+1)%visible.length; openLB(currentIndex); });
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key==='Escape') closeLB();
+  if (e.key==='ArrowLeft') { currentIndex=(currentIndex-1+visible.length)%visible.length; openLB(currentIndex); }
+  if (e.key==='ArrowRight') { currentIndex=(currentIndex+1)%visible.length; openLB(currentIndex); }
+});
+document.querySelectorAll('.filter-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.filter-item').forEach(b => b.classList.remove('active'));
+    el.classList.add('active'); currentFilter = el.dataset.filter; buildGallery();
+  });
+});
+
+loadArtworks();
+</script>
+</body>
+</html>
